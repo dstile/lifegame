@@ -1,0 +1,92 @@
+require_relative './spec_helper'
+
+describe 'Game of Life' do
+	describe 'Creature' do
+
+		before :each do
+			@world = World.new 50, 50
+		end
+		it 'must have a world to live in' do
+			@cell = Cell.new @world, 20, 20
+			@world.creatures[0].should be_true 
+		end
+
+		it 'has a cellular unit' do
+			@cell = Cell.new @world, 0, 0
+			@cell.should be_an_instance_of Cell
+		end
+
+
+		it 'knows its x location' do
+			@cell = Cell.new @world, 10, 10
+			@cell.x.should equal(10)
+		end
+	
+		it 'knows its y location' do
+			@cell = Cell.new @world, 10, 15
+			@cell.y.should equal(15)
+		end
+
+
+		it 'knows how it has a neighbor' do 
+			@creature = Cell.new @world, 10, 10
+			@neighbor = Cell.new @world, 10, 11
+			@creature.neighbor_count(@world).should equal(1)
+		end
+
+		it 'knows how many neighbors it has' do
+			@creature = Cell.new @world, 10, 10
+			@neighbor1 = Cell.new @world, 10, 11
+			@neighbor2 = Cell.new @world, 9, 9
+			@non_neighbor = Cell.new @world, 9, 8
+			@creature.neighbor_count(@world).should equal(2)
+
+		end
+
+		it 'cannot be created outside the boundaries of the world' do
+			@creature = Cell.new @world, 25, 51
+			@creature.should be_false 
+		end
+	
+	end
+
+  	describe 'World' do
+		it 'contains a defined plot of livable land' do
+			@world = World.new 50, 50
+			land = @world.plots
+			land.length.should eq(2500)
+		end
+
+		it 'should contain no living things to start' do
+			@world = World.new 50, 50
+			@world.creatures.size.should eq(0)
+		end
+		
+		it 'Can create a Cell' do
+			@world = World.new 50, 50
+			@world.createCreatures(1)	
+			@world.creatures[0].should be_kind_of(Cell)
+		end
+
+		it 'Can create multiple creates at once' do
+			@world = World.new 100, 100
+			@world.createCreatures(2)
+			@world.creatures.size.should eq(2)
+		end
+
+		it 'Can tell if a creature is living by coordinate' do
+			@world = World.new 100, 100
+			@world.createCreatures(1)
+			x = @world.creatures[0].x
+			y = @world.creatures[0].y
+			@world.hasLivingCreature?(x,y).should be_true
+		end
+
+		it 'Can tell if a creature does not exist by coordinate' do
+			@world = World.new 100, 100
+			@creature = Cell.new @world, 10, 10
+			@world.creatures << @creature	
+			@world.hasLivingCreature?(20,10).should be_false
+		end
+	end
+end
